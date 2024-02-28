@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="card">
+        <h1>Note Registration Form</h1>
+        <form id="registrationForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required><br>
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required><br>
+            <button class="submitBtn" type="submit">Register</button>
+        </form>
+        
+    </div>
+
+    <div class="card">
+        <h1>Note List</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                </tr>
+            </thead>
+            <tbody id="noteList">
+                <!-- Note data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load note data
+        fetch('/notes')
+            .then(response => response.json())
+            .then(data => {
+                const noteList = document.getElementById('noteList');
+                data.data.forEach(note => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${note.id}</td>
+                        <td>${note.title}</td>
+                        <td>${note.description}</td>
+                        <td>${note.createdAt}</td>
+                        <td>${note.updatedAt}</td>
+                    `;
+                    noteList.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/notes', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // Refresh note list
+                fetch('/notes')
+                    .then(response => response.json())
+                    .then(data => {
+                        const noteList = document.getElementById('noteList');
+                        noteList.innerHTML = ''; // Clear existing rows
+                        data.data.forEach(note => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${note.id}</td>
+                                <td>${note.title}</td>
+                                <td>${note.description}</td>
+                                <td>${note.createdAt}</td>
+                                <td>${note.updatedAt}</td>
+                            `;
+                            noteList.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

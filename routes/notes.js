@@ -46,14 +46,20 @@ router.post("/", async (req, res, next) => {
         return res.status(400).json(validate);
     }
 
+    // Console log untuk melihat data yang dikirim
+    console.log("Data yang dikirim:", req.body);
+
     // Proses Create
-    const note = await Notes.create(req.body);
+    const { title, description } = req.body;
+    const note = await Notes.create({ title, description });
     res.json({
         status: 200,
         message: "Success Create Data",
         data: note
     });
 });
+
+
 
 // PUT
 router.put("/:id", async (req, res, next) => {
