@@ -4,6 +4,8 @@ var router = express.Router();
 const Validator = require('fastest-validator');
 const v = new Validator();
 const {Notes} = require('../models');
+const multer = require('multer');
+const upload = multer();
 
 // GET
 router.get("/", async (req, res, next) => {
@@ -35,7 +37,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // POST
-router.post("/", async (req, res, next) => {
+router.post("/", upload.none(), async (req, res, next) => {
     // Validation
     const schema = {
         title: "string",
@@ -58,7 +60,6 @@ router.post("/", async (req, res, next) => {
         data: note
     });
 });
-
 
 
 // PUT
